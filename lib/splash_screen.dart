@@ -3,6 +3,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/services.dart';
 import 'package:fssp_snakegame/snake_game.dart';
 
+
 class SplashScreen extends StatelessWidget{
   const SplashScreen({super.key});
 
@@ -82,7 +83,7 @@ class _GameStartInput extends State<GameStartInput> {
             if (event.logicalKey == LogicalKeyboardKey.keyX ){
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SnakeGame()),
+                MaterialPageRoute(builder: (context) => GamePlay()),
               );
 
             }
