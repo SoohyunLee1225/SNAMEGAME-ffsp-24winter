@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fssp_snakegame/gameover_score.dart';
+import 'package:fssp_snakegame/splash_screen.dart';
 
 enum Direction {
   up(Offset(0, 1)),
@@ -89,20 +90,23 @@ class SnakeGame extends StatefulWidget{
 class _SnakeGameState extends State<SnakeGame> {
 
   static const int gridSize=20;
-  static int screenSize=300;
+  static int screenSize=400;
   static  int gridCount= screenSize ~/ gridSize;
-  static const double initialSpeed = 100.0;
+  static const double initialSpeed = 250.0;
   double cellSize = 20.0;
   
   late double snakeSpeed;
 
-  List<Offset> snake = [Offset(5, 5), Offset(5, 4), Offset(5, 3), Offset(5, 2), Offset(5, 1)];
-  Offset food = Offset(10, 10);
+  List<Offset> snake = [Offset(10,10), Offset(10,11), Offset(10,12 ), Offset(10,13), Offset(10,14)];
+  Offset food = Offset(5, 10);
   Direction direction = Direction.up;
   Direction keyboardDirection = Direction.up;
+  Timer? countdowntimer;
   Timer? timer;
   int score = 0;
   bool isGameRunning = false;
+
+  int countdown = 3;
 
   FocusNode _focusNode = FocusNode();
   Offset inputoffset = Offset(0, 0);
@@ -111,19 +115,44 @@ class _SnakeGameState extends State<SnakeGame> {
   void initState() {
     super.initState();
     _focusNode.requestFocus();
+    startCountdown();
+  }
+  
+  String get asScore => "$score";
+
+
+  void startCountdown() {
+    countdown=3;
+    countdowntimer= Timer.periodic(Duration(seconds: 1), (Timer countdowntimer) {
+      setState(() {
+        countdown--; // 카운트다운 감소
+        Text('$countdown', style: TextStyle(
+          fontFamily: 'SnaredrumZero',
+          fontSize: 50,
+          color: Colors.black
+        ),);
+      });
+
+      if (countdown == 0) {
+        countdowntimer.cancel(); // 카운트다운 종료
+        startGame(); // 게임 시작
+        
+      }
+    });
   }
 
   void startGame(){
     if (!isGameRunning){
       setState(() {
-        snakeSpeed = initialSpeed;
-        snake = [Offset(10, 14), Offset(10, 15), Offset(10, 16), Offset(10, 17), Offset(10, 18)];
-        direction = Direction.down;
         isGameRunning = true;
+        snake = [Offset(10,10), Offset(10,11), Offset(10,12), Offset(10,13), Offset(10,14)];
+        snakeSpeed = initialSpeed;
+        direction = Direction.up;
         score=0;
         generateFood();
-        timer = Timer.periodic(Duration(microseconds: snakeSpeed.toInt()), 
+        timer = Timer.periodic(Duration(milliseconds: snakeSpeed.toInt()), 
         (Timer t){
+          print("$isGameRunning.1");
           moveSnake();
           checkCollision();
         });
@@ -131,13 +160,13 @@ class _SnakeGameState extends State<SnakeGame> {
     }
   }
 
-  void generateFood(){ //음식 위치를 랜덤으로 생성하고, 만약 음식 위치가 뱀과 겹친다면 다시 생성
+  void generateFood(){ // 음식 위치를 랜덤으로 생성하고, 만약 음식 위치가 뱀과 겹친다면 다시 생성
     final Random rand = Random();
     Offset newFood;
     do{
       newFood = Offset(
-        rand.nextInt(gridCount).toDouble(),
-        rand.nextInt(gridCount).toDouble()
+        rand.nextInt(gridSize).toDouble(),
+        rand.nextInt(gridSize).toDouble()
       );
     } while(snake.contains(newFood));
     
@@ -189,7 +218,7 @@ class _SnakeGameState extends State<SnakeGame> {
         snake.first.dy>=gridCount ||
         snake.sublist(5).contains(snake.first)){
           stopGame();
-          // gameOver();
+          //gameOver();
         }
   }
 
@@ -197,7 +226,30 @@ class _SnakeGameState extends State<SnakeGame> {
     setState(() {
       isGameRunning = false;
       timer?.cancel();
-    });
+      print("$timer.cancel");
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => GameOver()),
+      // );
+
+      //GameOver(score:score);
+      // Future.microtask((){
+      //   Navigator.push(
+      //     context,
+      //     MaterialPageRoute(
+      //       builder: (context) => GameOver(score: score),
+      //     )
+      //   );
+      // }
+      // );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GameOver(score: score),
+      ),
+      );
+    }
+    );
   }
 
   void wasd(KeyEvent event){
@@ -214,7 +266,6 @@ class _SnakeGameState extends State<SnakeGame> {
       case PhysicalKeyboardKey.keyD:
         keyboardDirection = Direction.right;
         break;
-
     }
 
   }
@@ -223,84 +274,98 @@ class _SnakeGameState extends State<SnakeGame> {
 
   @override
   Widget build(BuildContext context){
-    screenSize=MediaQuery.of(context).size.width.toInt()-300;
+ //   screenSize=MediaQuery.of(context).size.width.toInt()-300;
     cellSize = screenSize / gridSize;
     
-    return Container(
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-          child: SizedBox(
-            width: screenSize.toDouble(),
-            height: screenSize.toDouble(),
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.pinkAccent,
-                  width: 1.0,
-                )
-              ),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return KeyboardListener(focusNode: _focusNode, 
-                  onKeyEvent: (KeyEvent event){
-                    switch(event.physicalKey){
-                      case PhysicalKeyboardKey.keyW:
-                        if(direction!=Direction.down){
-                          direction=Direction.up;
-                        }
-                        break;
-                      case PhysicalKeyboardKey.keyS:
-                        if(direction!=Direction.up){
-                          direction=Direction.down;
-                        }
-                        break;
-                      case PhysicalKeyboardKey.keyA:
-                        if(direction!=Direction.right){
-                          direction=Direction.left;
-                        }
-                        break;
-                      case PhysicalKeyboardKey.keyD:
-                        if(direction!=Direction.left){
-                          direction=Direction.right;
-                        }
-                        break;
-                      case PhysicalKeyboardKey.keyX:
-                        startGame();
-                        break;
-                    }
+    
+    return Column(
+      // width: screenSize.toDouble()+100.0,
+      // height: screenSize.toDouble()+100.0,
+      children: [
+        SizedBox(
+          height: 100
+        ),
+        SizedBox(
+        width: screenSize.toDouble()+100.0,
+        height: screenSize.toDouble()+100.0,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+            child: SizedBox(
+              width: screenSize.toDouble(),
+              height: screenSize.toDouble(),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.pinkAccent,
+                    width: 1.0,
+                  )
+                ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return KeyboardListener(focusNode: _focusNode, 
+                    onKeyEvent: (KeyEvent event){
+                      if(!isGameRunning) return;
+                      switch(event.physicalKey){
+                        // case PhysicalKeyboardKey.keyX:
+                        //   startGame();
+                        //   break;
+                        case PhysicalKeyboardKey.keyW:
+                          if(direction!=Direction.down){
+                            direction=Direction.up;
+                          }
+                          break;
+                        case PhysicalKeyboardKey.keyS:
+                          if(direction!=Direction.up){
+                            direction=Direction.down;
+                          }
+                          break;
+                        case PhysicalKeyboardKey.keyA:
+                          if(direction!=Direction.right){
+                            direction=Direction.left;
+                          }
+                          break;
+                        case PhysicalKeyboardKey.keyD:
+                          if(direction!=Direction.left){
+                            direction=Direction.right;
+                          }
+                          break;
+                      }
+                    },
+                    child: Stack(
+                        children: [
+                          CustomPaint(
+                            painter: BoundaryPainter(gridSize, cellSize),
+                            size:
+                                Size(constraints.maxWidth, constraints.maxWidth),
+                          ),
+                          CustomPaint(
+                            painter:
+                                SnakePainter(snake, food, gridSize, cellSize),
+                            size:
+                                Size(constraints.maxWidth, constraints.maxWidth),
+                          ),
+                        ],                    
+                    ),            
+                  );
                   },
-                  child: Stack(
-                      children: [
-                        CustomPaint(
-                          painter: BoundaryPainter(gridSize, cellSize),
-                          size:
-                              Size(constraints.maxWidth, constraints.maxWidth),
-                        ),
-                        CustomPaint(
-                          painter:
-                              SnakePainter(snake, food, gridSize, cellSize),
-                          size:
-                              Size(constraints.maxWidth, constraints.maxWidth),
-                        ),
-                      ],                    
-                  ),            
-                 );
-                },
-             ),
-            )  
-          )
-         ),
-         Positioned(
-          left: - 20,
-          top: 0,
-          child: Text('$score',
-                        style: TextStyle(fontFamily: 'SnaredrumTwo', fontSize: 50),
-                        ),
-          )
-        ],
+              ),
+              )  
+            )
+          ),
+          Positioned(
+            left: 0,
+            top: 0,
+            child: Text('$score',
+                          style: TextStyle(fontFamily: 'SnaredrumTwo', fontSize: 50),
+                          ),
+            ),
+          
+          ],
+        )
       )
+      ]
     );
     
   }
@@ -339,7 +404,7 @@ class SnakePainter extends CustomPainter {
             Offset(position.dx * cellSize, position.dy * cellSize),
             Offset((position.dx + 1) * cellSize, (position.dy + 1) * cellSize),
           ),
-          Radius.circular(cellSize / 2),
+          Radius.circular(cellSize / cellSize),
         ),
         snakePaint,
       );
