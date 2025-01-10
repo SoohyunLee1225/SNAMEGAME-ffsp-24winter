@@ -4,7 +4,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fssp_snakegame/gameover_score.dart';
-import 'package:fssp_snakegame/splash_screen.dart';
+import 'package:fssp_snakegame/server_api.dart';
+//import 'package:fssp_snakegame/splash_screen.dart';
 
 enum Direction {
   up(Offset(0, 1)),
@@ -40,19 +41,6 @@ enum Direction {
   }
 }
 
-// class _Direction{
-//   Offset up = Offset(0, 1);
-//   Offset down = Offset(0, -1);
-//   Offset left = Offset(-1, 0);
-//   Offset right = Offset(-1, 0);
-
-//   @override
-//   bool]]\\ operator ==(Object other) {
-//     // TODO: implement ==
-//     return super == other;
-//   }
-
-// }
 
 
 
@@ -64,20 +52,53 @@ class GamePlay extends StatelessWidget{
   Widget build(BuildContext context){
     return Scaffold(
       body: Center(
-        child: Container(
-          constraints: BoxConstraints(maxWidth: 1080), //최대 너비 제한
-          padding: EdgeInsets.all(16), //내부 여백 지정
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Image.asset('assets/images/background.png'),
-              SnakeGame(),
-            ]
-
-        ),
+        child: 
+          LayoutBuilder(
+            builder:(BuildContext context, BoxConstraints constraints){
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  Image.asset('assets/images/background.png',
+                  width: constraints.maxWidth*0.8,
+                  height: constraints.maxHeight*0.8,
+                  fit: BoxFit.none),
+                  Container(
+                //    top: constraints.maxHeight*0.2,
+                    child: SizedBox(
+                      width: min(400, constraints.maxWidth-100), 
+                      height: min(400, constraints.maxHeight-100), 
+                      child: SnakeGame(),))
+                  
+                  
+                ],
+              );
+            } 
+          )
+        //   child: Stack(
+        //     alignment: Alignment.center,
+        //     children: [
+        //       Image.asset('assets/images/background.png'),
+        //       Positioned(
+        //         top: 0.5*context.height,
+        //         child: SizedBox(
+        //           width:600,
+        //           height: 500, 
+        //           child: SnakeGame()))
+              
+             
+                  
+                    
+                    
+        //           ],
+                  
+                
+              
+              
+  
+        // ),
       )
-    )
-  );
+    );
+  
 
   }
 }
@@ -91,7 +112,7 @@ class _SnakeGameState extends State<SnakeGame> {
 
   static const int gridSize=20;
   static int screenSize=400;
-  static  int gridCount= screenSize ~/ gridSize;
+ // static  int gridCount= screenSize ~/ gridSize;
   static const double initialSpeed = 250.0;
   double cellSize = 20.0;
   
@@ -213,10 +234,10 @@ class _SnakeGameState extends State<SnakeGame> {
 
   void checkCollision(){
     if (snake.first.dx<0 ||
-        snake.first.dx>=gridCount ||
+        snake.first.dx>=gridSize ||
         snake.first.dy<0 ||
-        snake.first.dy>=gridCount ||
-        snake.sublist(5).contains(snake.first)){
+        snake.first.dy>=gridSize ||
+        snake.sublist(3).contains(snake.first)){
           stopGame();
           //gameOver();
         }
@@ -226,7 +247,6 @@ class _SnakeGameState extends State<SnakeGame> {
     setState(() {
       isGameRunning = false;
       timer?.cancel();
-      print("$timer.cancel");
       // Navigator.push(
       //   context,
       //   MaterialPageRoute(builder: (context) => GameOver()),
@@ -242,6 +262,7 @@ class _SnakeGameState extends State<SnakeGame> {
       //   );
       // }
       // );
+      sendScoreToServer(score);
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -275,97 +296,110 @@ class _SnakeGameState extends State<SnakeGame> {
   @override
   Widget build(BuildContext context){
  //   screenSize=MediaQuery.of(context).size.width.toInt()-300;
-    cellSize = screenSize / gridSize;
+ //   cellSize = screenSize / gridSize;
+   return 
+   LayoutBuilder(builder: (BuildContext context, BoxConstraints
+   constraints){
+   // final maxConstraints = BoxConstraints(maxHeight: 400, maxWidth: 400);
+    //  double screenSize = min(constraints.maxHeight, constraints.maxWidth);
+      cellSize = screenSize / gridSize;
     
-    
-    return Column(
-      // width: screenSize.toDouble()+100.0,
-      // height: screenSize.toDouble()+100.0,
-      children: [
-        SizedBox(
-          height: 100
-        ),
-        SizedBox(
-        width: screenSize.toDouble()+100.0,
-        height: screenSize.toDouble()+100.0,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-            child: SizedBox(
-              width: screenSize.toDouble(),
-              height: screenSize.toDouble(),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.pinkAccent,
-                    width: 1.0,
-                  )
-                ),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return KeyboardListener(focusNode: _focusNode, 
-                    onKeyEvent: (KeyEvent event){
-                      if(!isGameRunning) return;
-                      switch(event.physicalKey){
-                        // case PhysicalKeyboardKey.keyX:
-                        //   startGame();
-                        //   break;
-                        case PhysicalKeyboardKey.keyW:
-                          if(direction!=Direction.down){
-                            direction=Direction.up;
-                          }
-                          break;
-                        case PhysicalKeyboardKey.keyS:
-                          if(direction!=Direction.up){
-                            direction=Direction.down;
-                          }
-                          break;
-                        case PhysicalKeyboardKey.keyA:
-                          if(direction!=Direction.right){
-                            direction=Direction.left;
-                          }
-                          break;
-                        case PhysicalKeyboardKey.keyD:
-                          if(direction!=Direction.left){
-                            direction=Direction.right;
-                          }
-                          break;
-                      }
+      return Stack(
+        alignment: Alignment.center,
+        // width: screenSize.toDouble()+100.0,
+        // height: screenSize.toDouble()+100.0,
+        children: [
+          // SizedBox(
+          // width: screenSize.toDouble()+100.0,
+          // height: screenSize.toDouble()+100.0,
+          // child: 
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+              child: SizedBox(
+                width: screenSize.toDouble(),
+                height: screenSize.toDouble(),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.pinkAccent,
+                      width: 1.0,
+                    )
+                  ),
+                  width: screenSize.toDouble(),
+                  child: 
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      return 
+                      KeyboardListener(focusNode: _focusNode, 
+                      onKeyEvent: (KeyEvent event){
+                        if(!isGameRunning) return;
+                        switch(event.physicalKey){
+                          // case PhysicalKeyboardKey.keyX:
+                          //   startGame();
+                          //   break;
+                          case PhysicalKeyboardKey.keyW:
+                            if(direction!=Direction.down){
+                              direction=Direction.up;
+                            }
+                            break;
+                          case PhysicalKeyboardKey.keyS:
+                            if(direction!=Direction.up){
+                              direction=Direction.down;
+                            }
+                            break;
+                          case PhysicalKeyboardKey.keyA:
+                            if(direction!=Direction.right){
+                              direction=Direction.left;
+                            }
+                            break;
+                          case PhysicalKeyboardKey.keyD:
+                            if(direction!=Direction.left){
+                              direction=Direction.right;
+                            }
+                            break;
+                        }
+                      },
+                      child: Stack(
+                          children: [
+                            CustomPaint(
+                              painter: BoundaryPainter(gridSize, cellSize),
+                              size:
+                                  Size(constraints.maxWidth, constraints.maxWidth),
+                                  //Size(_screenSize, _screenSize),
+                            ),
+                            CustomPaint(
+                              painter:
+                                  SnakePainter(snake, food, gridSize, cellSize),
+                              size:
+                                 Size(constraints.maxWidth, constraints.maxWidth),
+                                 //Size(_screenSize, _screenSize),
+                            ),
+                          ],                    
+                      ),            
+                    );
                     },
-                    child: Stack(
-                        children: [
-                          CustomPaint(
-                            painter: BoundaryPainter(gridSize, cellSize),
-                            size:
-                                Size(constraints.maxWidth, constraints.maxWidth),
-                          ),
-                          CustomPaint(
-                            painter:
-                                SnakePainter(snake, food, gridSize, cellSize),
-                            size:
-                                Size(constraints.maxWidth, constraints.maxWidth),
-                          ),
-                        ],                    
-                    ),            
-                  );
-                  },
-              ),
-              )  
-            )
+                ),
+                )  
+              )
+            ),
+            
+            
+            ],
+       //   )
+       
           ),
           Positioned(
-            left: 0,
-            top: 0,
-            child: Text('$score',
-                          style: TextStyle(fontFamily: 'SnaredrumTwo', fontSize: 50),
-                          ),
-            ),
-          
-          ],
-        )
-      )
-      ]
+              left: -250,
+              top: 400,
+              child: Text('$score',
+                            style: TextStyle(fontFamily: 'SnaredrumTwo', fontSize: 50),
+                            ),
+              ),
+        ]
+      );
+    }
     );
     
   }
@@ -377,48 +411,38 @@ class SnakePainter extends CustomPainter {
   final Offset food;
   final int gridSize;
   final double cellSize;
+ 
 
   SnakePainter(this.snake, this.food, this.gridSize, this.cellSize);
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint snakePaint = Paint()
-      ..shader = LinearGradient(
-        colors: [Colors.green, Colors.lightGreen],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ).createShader(Rect.fromPoints(Offset.zero, Offset(cellSize, cellSize)));
-
     final Paint foodPaint = Paint()
-      ..shader = LinearGradient(
-        colors: [Colors.red, Colors.orange],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ).createShader(Rect.fromPoints(Offset.zero, Offset(cellSize, cellSize)));
+      ..color = Colors.pinkAccent;
 
-    // Draw snake
-    for (Offset position in snake) {
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
+      
+
+    // Draw snake with gradient per segment
+    for (int i = 0; i < snake.length; i++) {
+      double progress = i / (snake.length - 1); // 0.0 (머리) ~ 1.0 (꼬리)
+      Color segmentColor = Color.lerp(Colors.lightGreenAccent, const Color.fromARGB(255, 219, 255, 177), progress)!;
+
+      final Paint segmentPaint = Paint()..color = segmentColor;
+
+      Offset position = snake[i];
+      canvas.drawRect(
           Rect.fromPoints(
             Offset(position.dx * cellSize, position.dy * cellSize),
             Offset((position.dx + 1) * cellSize, (position.dy + 1) * cellSize),
           ),
-          Radius.circular(cellSize / cellSize),
-        ),
-        snakePaint,
+          
+      
+        segmentPaint,
       );
     }
 
     // Draw food
     canvas.drawRect(
-      // RRect.fromRectAndRadius(
-      //   Rect.fromPoints(
-      //     Offset(food.dx * cellSize, food.dy * cellSize),
-      //     Offset((food.dx + 1) * cellSize, (food.dy + 1) * cellSize),
-      //   ),
-      //   Radius.circular(cellSize / cellSize),
-      // ),
       Rect.fromPoints(
         Offset(food.dx * cellSize, food.dy * cellSize),
         Offset((food.dx + 1) * cellSize, (food.dy + 1) * cellSize),
@@ -445,7 +469,7 @@ class BoundaryPainter extends CustomPainter {
       ..color = Colors.pinkAccent
       ..style = PaintingStyle.stroke;
 
-    // Draw rounded squares for boundaries
+    // Draw squares for boundaries
     for (int i = 0; i < gridSize; i++) {
       for (int j = 0; j < gridSize; j++) {
         canvas.drawRect(
