@@ -50,30 +50,43 @@ class GamePlay extends StatelessWidget{
   
   @override
   Widget build(BuildContext context){
+
     return Scaffold(
       body: Center(
-        child: 
+        child: Stack(alignment: Alignment.center,
+        children: [
+        Image.asset('assets/images/fallingbackground.gif', width: 1920, height: 1080, fit: BoxFit.cover),
+        AspectRatio(aspectRatio: 4/3, child:
           LayoutBuilder(
             builder:(BuildContext context, BoxConstraints constraints){
+                final width = 1920.0;
+                final height = 1080.0;
               return Stack(
                 alignment: Alignment.center,
                 children: [
                   Image.asset('assets/images/background.png',
-                  width: constraints.maxWidth*0.8,
-                  height: constraints.maxHeight*0.8,
-                  fit: BoxFit.none),
-                  Container(
+                  width: width,
+                  height: height,
+                  fit: BoxFit.scaleDown),
+                  AspectRatio(
+                    aspectRatio: 4/3,
                 //    top: constraints.maxHeight*0.2,
-                    child: SizedBox(
-                      width: min(400, constraints.maxWidth-100), 
-                      height: min(400, constraints.maxHeight-100), 
-                      child: SnakeGame(),))
+                    child:Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(height: constraints.maxHeight*0.05),
+                        SizedBox(
+                          width:  max(constraints.maxWidth*0.5, 600 ), 
+                          height: max(constraints.maxHeight*0.5, 400), 
+                          child: SnakeGame(),)])),
+                          
                   
                   
                 ],
+                
               );
             } 
-          )
+          ))
         //   child: Stack(
         //     alignment: Alignment.center,
         //     children: [
@@ -96,7 +109,7 @@ class GamePlay extends StatelessWidget{
               
   
         // ),
-      )
+      ],))
     );
   
 
@@ -147,11 +160,6 @@ class _SnakeGameState extends State<SnakeGame> {
     countdowntimer= Timer.periodic(Duration(seconds: 1), (Timer countdowntimer) {
       setState(() {
         countdown--; // 카운트다운 감소
-        Text('$countdown', style: TextStyle(
-          fontFamily: 'SnaredrumZero',
-          fontSize: 50,
-          color: Colors.black
-        ),);
       });
 
       if (countdown == 0) {
@@ -302,22 +310,34 @@ class _SnakeGameState extends State<SnakeGame> {
    constraints){
    // final maxConstraints = BoxConstraints(maxHeight: 400, maxWidth: 400);
     //  double screenSize = min(constraints.maxHeight, constraints.maxWidth);
+      screenSize = min(min(400, constraints.maxWidth.toInt()), (min(400, constraints.maxHeight.toInt())));
       cellSize = screenSize / gridSize;
     
-      return Stack(
-        alignment: Alignment.center,
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         // width: screenSize.toDouble()+100.0,
         // height: screenSize.toDouble()+100.0,
         children: [
+          Positioned(
+              left: -250,
+              top: 0,
+              child: SizedBox(width: 150, child:
+              Text('$score'.padLeft(5, '0'),
+                            style: TextStyle(fontFamily: 'SnaredrumTwo', fontSize: 50),
+                            ),)
+              ),
+          //  SizedBox(width: 10),
           // SizedBox(
           // width: screenSize.toDouble()+100.0,
           // height: screenSize.toDouble()+100.0,
           // child: 
-          Stack(
+          AspectRatio(
+            aspectRatio: 1/1,
+            child: Stack(
             alignment: Alignment.center,
             children: [
-              Container(
-              child: SizedBox(
+              
+              SizedBox(
                 width: screenSize.toDouble(),
                 height: screenSize.toDouble(),
                 child: Container(
@@ -327,7 +347,7 @@ class _SnakeGameState extends State<SnakeGame> {
                       width: 1.0,
                     )
                   ),
-                  width: screenSize.toDouble(),
+                 // width: screenSize.toDouble(),
                   child: 
                   LayoutBuilder(
                     builder: (context, constraints) {
@@ -383,20 +403,22 @@ class _SnakeGameState extends State<SnakeGame> {
                 ),
                 )  
               )
-            ),
+            ,
+            // Positioned(
+            //   left: -250,
+            //   top: 400,
+            //   child: Text('$score',
+            //                 style: TextStyle(fontFamily: 'SnaredrumTwo', fontSize: 50),
+            //                 ),
+            //   ),
             
             
             ],
        //   )
        
           ),
-          Positioned(
-              left: -250,
-              top: 400,
-              child: Text('$score',
-                            style: TextStyle(fontFamily: 'SnaredrumTwo', fontSize: 50),
-                            ),
-              ),
+      ),
+          
         ]
       );
     }
@@ -405,6 +427,8 @@ class _SnakeGameState extends State<SnakeGame> {
   }
 
 }
+
+
 
 class SnakePainter extends CustomPainter {
   final List<Offset> snake;
@@ -488,5 +512,6 @@ class BoundaryPainter extends CustomPainter {
     return false;
   }
 }
+
 
 

@@ -66,6 +66,10 @@ flutter:
       - assets/images/background.png
       - assets/images/SNAKE GAME.png
       - assets/images/GAME OVER.png
+      - assets/images/gameover.gif
+      - assets/images/snakegame.gif
+      - assets/images/fallingeffect.gif
+      - assets/images/fallingbackground.gif
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
