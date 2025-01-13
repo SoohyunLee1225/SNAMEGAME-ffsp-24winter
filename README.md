@@ -74,6 +74,8 @@ A modern twist on the classic Snake game, built with **Flutter** for a seamless 
 
 ---
 ## 📂 File Structure
+
+```plaintext
 snake-game/
 ├── assets/
 │   ├── images/
@@ -93,6 +95,7 @@ snake-game/
 │   └── gameover_score.dart # Gameover screen
 │   │
 └── pubspec.yaml            # Dependencies and configuration
+```
 
 ---
 ## 🏆 Future Enhancements
