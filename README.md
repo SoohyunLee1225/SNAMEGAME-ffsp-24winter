@@ -1,6 +1,6 @@
 # 🐍 Snake Game
 
-A modern twist on the classic Snake game, built with **Flutter** for a seamless and responsive experience. The game includes dynamic UI, smooth animations, and server integration for storing and retrieving scores.
+This is the desktop app version of the classic snake game, created using **flutter**. Once the game starts, the player's goal, or 'food', is created inside a specific area, and the player aims to control the snake through keyboard input and eat it. Eating increases the length and speed of the snake. Players must move the snake while avoiding collision conditions, and aim to eat as much food as possible to increase their score. In addition, it has been designed to look better by applying animation effects to the logo and background.
 
 ---
 
