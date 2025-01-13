@@ -9,13 +9,11 @@ This is the desktop app version of the classic snake game, created using **flutt
 - **Dynamic Gameplay:**
   - The snake moves and grows as it consumes food.
   - Gradient color transitions for the snake's body from head to tail.
-- **Responsive Design:**
-  - Game elements dynamically adjust to different screen sizes.
 - **Server Integration:**
-  - High scores are saved to a server and displayed in a leaderboard.
+  - Scores are saved to a server and displayed in a scoreboard.
 - **Intuitive Controls:**
-  - Keyboard controls for desktop users (`W`, `A`, `S`, `D` for movement, `Q` to quit).
-- **Countdown Animation:**
+  - Keyboard controls for desktop users (`W`, `A`, `S`, `D` for movement, `Q` to quit, etc).
+- **Countdown:**
   - 3-second countdown before gameplay begins.
 
 ---
