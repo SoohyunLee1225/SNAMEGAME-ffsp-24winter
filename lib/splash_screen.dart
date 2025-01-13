@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/services.dart';
+import 'package:fssp_snakegame/scoreboard.dart';
 import 'package:fssp_snakegame/snake_game.dart';
+import 'dart:math';
 
 
 class SplashScreen extends StatelessWidget{
@@ -11,38 +13,62 @@ class SplashScreen extends StatelessWidget{
   Widget build(BuildContext context){
     return Scaffold(
       body: Center(
-        child: Container(
-          constraints: BoxConstraints(maxWidth: 1080), //최대 너비 제한
-          padding: EdgeInsets.all(16), //내부 여백 지정
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Image.asset('assets/images/background.png'),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset('assets/images/SNAKE GAME.png'), //추후수정, 애니메이션 로고로 수정할 것임
-                  SizedBox(height: 0), //추후 수정 필요
-                  Text('Press X to Start', //깜빡이는 효과 넣어야함. 그렇다면 아예 GamestartInput에 넣는것도 좋을 것 같음(stateful이니까), container안에 넣으면.. 괜찮지않을까?
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontFamily: 'SnaredrumZero'
-                  )
-                  ),
-                  Text('Press Q to Quit',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontFamily: 'SnaredrumZero',
-                  )),
+        child: 
+        Stack(
+          alignment: Alignment.center,
+          children: [
+          Image.asset('assets/images/fallingbackground.gif', width: 1920, height: 1080, fit: BoxFit.cover),
+          AspectRatio( aspectRatio: 4/3, 
+          child:
+          LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints){
+              return
+              Stack(
+              alignment: Alignment.center,
+              children: [
+                
+                Image.asset('assets/images/background.png',
+                width: constraints.maxWidth,
+                height: constraints.maxHeight,
+                fit: BoxFit.scaleDown,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/images/snakegame.gif',
+                    width:constraints.maxWidth*0.8,
+                      fit: BoxFit.scaleDown),
+                    SizedBox(height: constraints.maxHeight*0.05),
+                    Text('Press S for Scoreboard',
+                    style: TextStyle(
+                      fontSize: min(constraints.maxHeight*0.03, constraints.maxWidth*0.03),
+                      fontFamily: 'SnaredrumZero',
+                    )),
+                    Text('Press X to Start', 
+                    style: TextStyle(
+                      fontSize: min(constraints.maxHeight*0.05, constraints.maxWidth*0.05),
+                      fontFamily: 'SnaredrumZero'
+                    )
+                    ),
+                    Text('Press Q to Quit',
+                    style: TextStyle(
+                      fontSize: min(constraints.maxHeight*0.05, constraints.maxWidth*0.05),
+                      fontFamily: 'SnaredrumZero',
+                    )),
+                    
+                    
 
-                ],
-              ),
-              GameStartInput(),
-            ],
+                  ],
+                ),
+                GameStartInput(),
+              ],
+            );
+            }
+            
           )
-          
-        )
-      ),
+        ),
+          ]
+      ))
     );
   }
 
@@ -60,7 +86,6 @@ class GameStartInput extends StatefulWidget{
 class _GameStartInput extends State<GameStartInput> {
   final _focusNode = FocusNode();
 
-  final String inputText ="";
 
   @override
   void initState() {
@@ -88,7 +113,13 @@ class _GameStartInput extends State<GameStartInput> {
 
             }
             else if (event.logicalKey == LogicalKeyboardKey.keyQ){
-              Navigator.pop(context);
+              exit(0);
+            }
+            else if(event.logicalKey == LogicalKeyboardKey.keyS){
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ScoreBoard()),
+              );
             } 
           }
         },
@@ -99,15 +130,5 @@ class _GameStartInput extends State<GameStartInput> {
 
   }
 }
-
-
-// class GameTitle extends StatefulWidget{
-//   @override
-//   _GameTitleState createState() => _GameTitleState();
-// }
-
-// class _GameTitleState extends State <GameTitle>{
-
-// }
 
 
