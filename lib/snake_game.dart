@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fssp_snakegame/gameover_score.dart';
 import 'package:fssp_snakegame/server_api.dart';
-//import 'package:fssp_snakegame/splash_screen.dart';
+
 
 enum Direction {
   up(Offset(0, 1)),
@@ -70,7 +70,6 @@ class GamePlay extends StatelessWidget{
                   fit: BoxFit.scaleDown),
                   AspectRatio(
                     aspectRatio: 4/3,
-                //    top: constraints.maxHeight*0.2,
                     child:Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -87,28 +86,6 @@ class GamePlay extends StatelessWidget{
               );
             } 
           ))
-        //   child: Stack(
-        //     alignment: Alignment.center,
-        //     children: [
-        //       Image.asset('assets/images/background.png'),
-        //       Positioned(
-        //         top: 0.5*context.height,
-        //         child: SizedBox(
-        //           width:600,
-        //           height: 500, 
-        //           child: SnakeGame()))
-              
-             
-                  
-                    
-                    
-        //           ],
-                  
-                
-              
-              
-  
-        // ),
       ],))
     );
   
@@ -125,7 +102,6 @@ class _SnakeGameState extends State<SnakeGame> {
 
   static const int gridSize=20;
   static int screenSize=400;
- // static  int gridCount= screenSize ~/ gridSize;
   static const double initialSpeed = 250.0;
   double cellSize = 20.0;
   
@@ -247,7 +223,7 @@ class _SnakeGameState extends State<SnakeGame> {
         snake.first.dy>=gridSize ||
         snake.sublist(3).contains(snake.first)){
           stopGame();
-          //gameOver();
+         
         }
   }
 
@@ -255,21 +231,7 @@ class _SnakeGameState extends State<SnakeGame> {
     setState(() {
       isGameRunning = false;
       timer?.cancel();
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => GameOver()),
-      // );
-
-      //GameOver(score:score);
-      // Future.microtask((){
-      //   Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //       builder: (context) => GameOver(score: score),
-      //     )
-      //   );
-      // }
-      // );
+      
       sendScoreToServer(score);
       Navigator.push(
         context,
@@ -303,34 +265,22 @@ class _SnakeGameState extends State<SnakeGame> {
 
   @override
   Widget build(BuildContext context){
- //   screenSize=MediaQuery.of(context).size.width.toInt()-300;
- //   cellSize = screenSize / gridSize;
-   return 
+    return 
    LayoutBuilder(builder: (BuildContext context, BoxConstraints
    constraints){
-   // final maxConstraints = BoxConstraints(maxHeight: 400, maxWidth: 400);
-    //  double screenSize = min(constraints.maxHeight, constraints.maxWidth);
       screenSize = min(min(400, constraints.maxWidth.toInt()), (min(400, constraints.maxHeight.toInt())));
       cellSize = screenSize / gridSize;
     
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        // width: screenSize.toDouble()+100.0,
-        // height: screenSize.toDouble()+100.0,
         children: [
-          Positioned(
-              left: -250,
-              top: 0,
+          Transform.translate(
+              offset: Offset(0,0),
               child: SizedBox(width: 150, child:
               Text('$score'.padLeft(5, '0'),
                             style: TextStyle(fontFamily: 'SnaredrumTwo', fontSize: 50),
                             ),)
               ),
-          //  SizedBox(width: 10),
-          // SizedBox(
-          // width: screenSize.toDouble()+100.0,
-          // height: screenSize.toDouble()+100.0,
-          // child: 
           AspectRatio(
             aspectRatio: 1/1,
             child: Stack(
@@ -347,7 +297,6 @@ class _SnakeGameState extends State<SnakeGame> {
                       width: 1.0,
                     )
                   ),
-                 // width: screenSize.toDouble(),
                   child: 
                   LayoutBuilder(
                     builder: (context, constraints) {
@@ -356,9 +305,6 @@ class _SnakeGameState extends State<SnakeGame> {
                       onKeyEvent: (KeyEvent event){
                         if(!isGameRunning) return;
                         switch(event.physicalKey){
-                          // case PhysicalKeyboardKey.keyX:
-                          //   startGame();
-                          //   break;
                           case PhysicalKeyboardKey.keyW:
                             if(direction!=Direction.down){
                               direction=Direction.up;
@@ -387,14 +333,12 @@ class _SnakeGameState extends State<SnakeGame> {
                               painter: BoundaryPainter(gridSize, cellSize),
                               size:
                                   Size(constraints.maxWidth, constraints.maxWidth),
-                                  //Size(_screenSize, _screenSize),
                             ),
                             CustomPaint(
                               painter:
                                   SnakePainter(snake, food, gridSize, cellSize),
                               size:
                                  Size(constraints.maxWidth, constraints.maxWidth),
-                                 //Size(_screenSize, _screenSize),
                             ),
                           ],                    
                       ),            
@@ -404,17 +348,11 @@ class _SnakeGameState extends State<SnakeGame> {
                 )  
               )
             ,
-            // Positioned(
-            //   left: -250,
-            //   top: 400,
-            //   child: Text('$score',
-            //                 style: TextStyle(fontFamily: 'SnaredrumTwo', fontSize: 50),
-            //                 ),
-            //   ),
+           
             
             
             ],
-       //   )
+
        
           ),
       ),
@@ -446,7 +384,7 @@ class SnakePainter extends CustomPainter {
 
       
 
-    // Draw snake with gradient per segment
+
     for (int i = 0; i < snake.length; i++) {
       double progress = i / (snake.length - 1); // 0.0 (머리) ~ 1.0 (꼬리)
       Color segmentColor = Color.lerp(Colors.lightGreenAccent, const Color.fromARGB(255, 219, 255, 177), progress)!;
@@ -465,7 +403,6 @@ class SnakePainter extends CustomPainter {
       );
     }
 
-    // Draw food
     canvas.drawRect(
       Rect.fromPoints(
         Offset(food.dx * cellSize, food.dy * cellSize),
@@ -493,7 +430,7 @@ class BoundaryPainter extends CustomPainter {
       ..color = Colors.pinkAccent
       ..style = PaintingStyle.stroke;
 
-    // Draw squares for boundaries
+
     for (int i = 0; i < gridSize; i++) {
       for (int j = 0; j < gridSize; j++) {
         canvas.drawRect(

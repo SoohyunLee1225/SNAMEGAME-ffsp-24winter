@@ -64,11 +64,8 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
       - assets/images/background.png
-      - assets/images/SNAKE GAME.png
-      - assets/images/GAME OVER.png
       - assets/images/gameover.gif
       - assets/images/snakegame.gif
-      - assets/images/fallingeffect.gif
       - assets/images/fallingbackground.gif
 
 

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,12 +35,7 @@ class SplashScreen extends StatelessWidget{
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                  // TitleAnimation(),
                     Image.asset('assets/images/snakegame.gif',
-                    // width: min(constraints.maxWidth*0.5, 900),
-                    //   height: min(constraints.maxHeight*0.5,400) ,
-                    //   fit: BoxFit.cover), 
-                    ////추후수정, 애니메이션 로고로 수정할 것임
                     width:constraints.maxWidth*0.8,
                       fit: BoxFit.scaleDown),
                     SizedBox(height: constraints.maxHeight*0.05),
@@ -50,7 +44,7 @@ class SplashScreen extends StatelessWidget{
                       fontSize: min(constraints.maxHeight*0.03, constraints.maxWidth*0.03),
                       fontFamily: 'SnaredrumZero',
                     )),
-                    Text('Press X to Start', //깜빡이는 효과 넣어야함. 그렇다면 아예 GamestartInput에 넣는것도 좋을 것 같음(stateful이니까), container안에 넣으면.. 괜찮지않을까?
+                    Text('Press X to Start', 
                     style: TextStyle(
                       fontSize: min(constraints.maxHeight*0.05, constraints.maxWidth*0.05),
                       fontFamily: 'SnaredrumZero'
@@ -92,7 +86,6 @@ class GameStartInput extends StatefulWidget{
 class _GameStartInput extends State<GameStartInput> {
   final _focusNode = FocusNode();
 
-  //final String inputText ="";
 
   @override
   void initState() {
@@ -139,59 +132,3 @@ class _GameStartInput extends State<GameStartInput> {
 }
 
 
-// class GameTitle extends StatefulWidget{
-//   @override
-//   _GameTitleState createState() => _GameTitleState();
-// }
-
-// class _GameTitleState extends State <GameTitle>{
-
-// }
-
-
-// class TitleAnimation extends StatefulWidget{
-//   @override
-//   _TitleAnimationState createState() => _TitleAnimationState();
-// }
-
-// class _TitleAnimationState extends State<TitleAnimation>
-//   {
-//     bool showFirstImage = true;
-//     Timer? timer;
-
-
-//     @override
-//     void initState(){
-//       super.initState();
-//       timer = Timer.periodic(Duration(milliseconds: 4), (Timer t){
-        
-//           showFirstImage =!showFirstImage;
-        
-//       });
-//     }
-
-//     @override
-//     void dispose(){
-//       timer?.cancel();
-//       super.dispose();
-//     }
-
-//     @override
-//     Widget build(BuildContext context){
-//       return LayoutBuilder(
-//             builder:(BuildContext context, BoxConstraints constraints){
-//               return SizedBox(
-//                 width: min(constraints.maxWidth*0.5, 900),
-//                 height: min(constraints.maxHeight*0.5,400),
-//                 child: showFirstImage?
-//                 Image.asset('assets/images/GAME OVER.png',
-//                 fit: BoxFit.cover,)
-//                 :Image.asset(
-//                   'assets/images/SNAKE GAME.png',
-//                   fit: BoxFit.cover),
-//                 );
-//             },
-//       );
-//     }
-
-// }
