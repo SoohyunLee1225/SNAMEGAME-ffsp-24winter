@@ -430,7 +430,7 @@ class BoundaryPainter extends CustomPainter {
       ..color = Colors.pinkAccent
       ..style = PaintingStyle.stroke;
 
-
+    // Draw squares for boundaries
     for (int i = 0; i < gridSize; i++) {
       for (int j = 0; j < gridSize; j++) {
         canvas.drawRect(
